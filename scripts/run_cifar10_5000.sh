@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=3 python3 main_cls_meta.py --exp_name meta_cifar10_5000 --data.src CIFAR10M --data.batch_size 200 --data.n_workers 16 --data.n_examples 5000 5000 5000 --data.n_datasets 40 10 40 10 --train.lr_decay_epoch 100
