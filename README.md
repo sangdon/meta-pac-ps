@@ -2,6 +2,8 @@
 This repository is the PyTorch implementation of [PAC Prediction Sets for Meta-Learning](https://arxiv.org/abs/2207.02440) (NeurIPS22).
 This code generates a prediction set that satisfies the probably approximately correct (PAC) guarantee for meta learning. 
 
+<p align="center"><img src=".github/teaser.png" width="500">
+
 ## Mini-ImageNet
 
 ## FewRel
