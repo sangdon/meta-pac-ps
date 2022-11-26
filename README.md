@@ -8,10 +8,21 @@ This code generates a prediction set that satisfies the probably approximately c
 
 Download the Mini-ImageNet dataset from the [original repo](https://github.com/yaoyao-liu/mini-imagenet-tools). 
 In particular, download the postprocessed dataset from [this link](https://drive.google.com/open?id=137M9jEv8nw0agovbUiEN_fPl_waJ2jIj), and
-put it under `data/miniimagenet`. The following script does this for you along with some postprocessing. 
+put it under `data/miniimagenet` (i.e., 'data/miniimagenet/mini-imagenet'). 
+The following script takes care of the rest postprocessing. 
 ```
 cd data/miniimagenet
-./download.sh
+./process.sh
+```
+
+  Train a Prototypical network as follows:
+```  
+./scripts/train_miniimagenet_protonet.sh 
+```
+  
+Construct a meta PAC prediction set along with baselines as follows:
+```
+./scripts/cal_miniimagenet_protonet.sh
 ```
 
 ## FewRel Dataset
