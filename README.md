@@ -4,11 +4,11 @@ This code generates a prediction set that satisfies the probably approximately c
 
 <p align="center"><img src=".github/teaser.png" width="500">
 
-## Mini-ImageNet
+## Mini-ImageNet Dataaset
 
-## FewRel
+## FewRel Dataaset
 
-## CDC Heart
+## CDC Heart Dataaset
 
 Download the Heart dataset as follows:
 ```
