@@ -4,11 +4,19 @@ This code generates a prediction set that satisfies the probably approximately c
 
 <p align="center"><img src=".github/teaser.png" width="500">
 
-## Mini-ImageNet Dataaset
+## Mini-ImageNet Dataset
 
-## FewRel Dataaset
+Download the Mini-ImageNet dataset from the [original repo](https://github.com/yaoyao-liu/mini-imagenet-tools). 
+In particular, download the postprocessed dataset from [this link](https://drive.google.com/open?id=137M9jEv8nw0agovbUiEN_fPl_waJ2jIj), and
+put it under `data/miniimagenet`. The following script does this for you along with some postprocessing. 
+```
+cd data/miniimagenet
+./download.sh
+```
 
-## CDC Heart Dataaset
+## FewRel Dataset
+
+## CDC Heart Dataset
 
 Download the Heart dataset as follows:
 ```
