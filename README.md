@@ -13,7 +13,7 @@ This code generates a prediction set that satisfies the probably approximately c
 Download the Heart dataset as follows:
 ```
 cd data/heart
-././download.sh
+./download.sh
 ```
 
 Train a Prototypical network as follows:
