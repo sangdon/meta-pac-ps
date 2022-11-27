@@ -27,7 +27,7 @@ Construct a meta PAC prediction set along with baselines as follows:
 
 ## FewRel Dataset
   
-We use FewRel 1.0 and [a related toolkit](https://github.com/thunlp/FewRel). The required part of the toolkit and dataset are included in this repository.
+We use [FewRel 1.0 and a related toolkit](https://github.com/thunlp/FewRel). The required part of the toolkit and dataset are included in this repository.
 the following script initializes the toolkit and the dataset for you.
 ```
 cd data/fewrel
