@@ -28,7 +28,7 @@ class PredSetConstructor_CP(PredSetConstructor):
             self.name_postfix = ''    
         self.name_postfix = self.name_postfix + f'_n_{m}_eps_{eps:e}_delta_{delta:e}'
         verbose = params.verbose
-        #m, eps, delta = self.mdl.n.item(), self.mdl.eps.item(), self.mdl.delta.item()
+        
         print(f"## construct a prediction set: m = {m}, eps = {eps:.2e}, delta = {delta:.2e}")
 
         ## load a model
@@ -50,7 +50,6 @@ class PredSetConstructor_CP(PredSetConstructor):
                 break
         f_nll_list = tc.cat(f_nll_list)
         f_nll_list = f_nll_list[:m]
-        #assert len(f_nll_list) == m, f'len(f_nll_list) = {len(f_nll_list)} != m = {m}'
 
         ## line search over T
         T, T_step, T_end, T_opt_nll = 0.0, self.params.T_step, self.params.T_end, np.inf
@@ -59,7 +58,6 @@ class PredSetConstructor_CP(PredSetConstructor):
             ## CP bound
             error_U = (f_nll_list > T_nll).sum().float()
             k_U, n_U, delta_U = error_U.int().item(), m, delta
-            #print(f'[Clopper-Pearson parametes] k={k_U}, n={n_U}, delta={delta_U}')
             U = bci_clopper_pearson_worst(k_U, n_U, delta_U)
 
             if U <= eps:

@@ -43,12 +43,6 @@ class ImageNet:
         tforms_aug = data.get_aug_tforms(aug_types)
 
         ## default transformations
-        # tforms_dft = [
-        #     ctforms.Resize(256),
-        #     ctforms.CenterCrop(224),
-        #     ctforms.ToTensor(),
-        #     ctforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        # ]
         tforms_dft_rnd = [
             ctforms.RandomResizedCrop(224),
             ctforms.RandomHorizontalFlip(),

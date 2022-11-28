@@ -77,12 +77,11 @@ class PredSetConstructor_meta(PredSetConstructor):
         for i in range(1, n_datasets+1):
             mdl_i = copy.deepcopy(self.mdl)
             l_i = PredSetConstructor_BC(mdl_i, params=self.params, name_postfix=f"{self.name_postfix}_dataset_{i}")
-            l_i.train(ld_cal, types.SimpleNamespace(n=n_shots_cal*n_ways, eps=eps, delta=delta/2.0, verbose=False, save=False))
+            l_i.train(ld_cal, types.SimpleNamespace(n=n_shots_cal*n_ways, eps=eps, delta=alpha/2.0, verbose=False, save=False))
             tau_list.append((-mdl_i.T.data).exp().item())
         tau_list = tc.tensor(tau_list)
         
-        # construct a prediction set for taus
-        warnings.warn('write more general code')
+        # construct a prediction set for taus, this is equivalent to running PredSetConstructor_BC
         def find_tau(v_list, n, eps, delta):
             T, T_step, T_end, T_opt = 0.0, self.params.T_step, self.params.T_end, 0.0
             while T <= T_end:
@@ -100,7 +99,7 @@ class PredSetConstructor_meta(PredSetConstructor):
                     break
                 T += T_step        
             return T_opt
-        T_opt = find_tau(tau_list, n_datasets, delta/2.0, alpha)        
+        T_opt = find_tau(tau_list, n_datasets, alpha/2.0, delta)        
         T_opt_nll = -np.log(T_opt).astype(np.float32)
 
         # finalize a prediction set model
@@ -125,22 +124,19 @@ class PredSetConstructor_meta(PredSetConstructor):
     def test(self, ld, ld_name, verbose=False, save=True):
         ## compute set size and error
         fn = os.path.join(self.params.snapshot_root, self.params.exp_name, 'stats_pred_set.pk')
-        if False: #os.path.exists(fn) and not self.params.rerun:
-            res = pickle.load(open(fn, 'rb'))
-            size, error = res['size_test'], res['error_test']
-        else:
-            print('!! currently always recompute!')
-            size, error = [], []
-            for x, y in ld:
-                # size and error for each test dataset
-                size_i = loss_set_size(x, y, self.mdl, reduction='none', device=self.params.device)['loss']
-                error_i = loss_set_error(x, y, self.mdl, reduction='none', device=self.params.device)['loss']
-                size.append(size_i.mean().unsqueeze(0))
-                error.append(error_i.mean().unsqueeze(0))
-            size, error = tc.cat(size), tc.cat(error)
-            
-            if save:
-                pickle.dump({'error_test': error, 'size_test': size, 'n': self.mdl.n, 'eps': self.mdl.eps, 'delta': self.mdl.delta}, open(fn, 'wb'))
+
+        # always recompute
+        size, error = [], []
+        for x, y in ld:
+            # size and error for each test dataset
+            size_i = loss_set_size(x, y, self.mdl, reduction='none', device=self.params.device)['loss']
+            error_i = loss_set_error(x, y, self.mdl, reduction='none', device=self.params.device)['loss']
+            size.append(size_i.mean().unsqueeze(0))
+            error.append(error_i.mean().unsqueeze(0))
+        size, error = tc.cat(size), tc.cat(error)
+
+        if save:
+            pickle.dump({'error_test': error, 'size_test': size, 'n': self.mdl.n, 'eps': self.mdl.eps, 'delta': self.mdl.delta}, open(fn, 'wb'))
 
         if verbose:
             mn = size.min()

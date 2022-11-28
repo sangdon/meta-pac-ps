@@ -4,7 +4,6 @@ import torch as tc
 from torch import nn
 
 from .util import *
-from model.util import neg_log_prob
 
 def reduce(loss_vec, reduction):
     if reduction == 'mean':
@@ -22,23 +21,9 @@ def reduce(loss_vec, reduction):
 ##
 def loss_xe(x, y, model, reduction='mean', device=tc.device('cpu'), weight=None):
     x, y = to_device(x, device), to_device(y, device)
-    loss_fn = nn.CrossEntropyLoss(reduction=reduction, weight=weight.to(device))
+    loss_fn = nn.CrossEntropyLoss(reduction=reduction, weight=weight.to(device) if weight else None)
     loss = loss_fn(model(x)['fh'], y)
     return {'loss': loss}
-
-
-def loss_xe_adv(x, y, model, reduction='mean', device=tc.device('cpu'), reg_param_adv=0.0):
-    x, y, y_dom = x.to(device), y[0].to(device), y[1].to(device)
-    loss_xe_fn = nn.CrossEntropyLoss(reduction=reduction)
-    loss_adv_fn = nn.BCELoss(reduction=reduction)
-    
-    out = model(x)
-
-    loss_xe = loss_xe_fn(out['fh'], y)
-    loss_adv = loss_adv_fn(out['prob_src'][:, 0], y_dom.float())
-    loss = loss_xe + reg_param_adv*loss_adv
-
-    return {'loss': loss, 'loss_xe': loss_xe, 'loss_adv': loss_adv}
 
 
 def loss_01(x, y, model, reduction='mean', device=tc.device('cpu')):
@@ -48,25 +33,6 @@ def loss_01(x, y, model, reduction='mean', device=tc.device('cpu')):
     loss = reduce(loss_vec, reduction)
     return {'loss': loss}
 
-
-# ##
-# ## fewshot classification
-# ##
-# def loss_xe_fewshot(x, y, model, reduction='mean', device=tc.device('cpu')):
-    
-#     x, y = to_device(x, device), to_device(y, device)
-#     loss_fn = nn.CrossEntropyLoss(reduction=reduction)
-#     loss = loss_fn(model({'x_eval': x['x_eval'], 'x_adapt': x['x_adapt'], 'y_adapt': y['y_adapt']})['fh'], y['y_eval'])
-#     return {'loss': loss}
-
-
-# def loss_01_fewshot(x, y, model, reduction='mean', device=tc.device('cpu')):
-    
-#     x, y = to_device(x, device), to_device(y, device)
-#     yh = model({'x_eval': x['x_eval'], 'x_adapt': x['x_adapt'], 'y_adapt': y['y_adapt']})['yh_top']
-#     loss_vec = (yh != y['y_eval']).float()
-#     loss = reduce(loss_vec, reduction)
-#     return {'loss': loss}
 
 ##
 ## prediction set estimation
@@ -85,30 +51,3 @@ def loss_set_error(x, y, mdl, reduction='mean', device=tc.device('cpu')):
     return {'loss': loss}
     
          
-
-##
-## regression
-##
-def loss_nll(x, y, model, reduction='mean', device=tc.device('cpu'), normalizer=1.0):
-    x, y = to_device(x, device), to_device(y, device)
-    out = model(x)
-    ##assumption: gaussian
-    #print("sig min, max:", out['logvar'].min().exp().sqrt(), out['logvar'].max().exp().sqrt())
-    #loss_vec = neg_log_prob(out['mu']/normalizer, out['logvar']-tc.tensor(normalizer).pow(2.0).log(), y/normalizer)
-    loss_vec = neg_log_prob(out['mu'], out['logvar'], y)
-    loss = reduce(loss_vec, reduction)
-
-    #loss = tc.minimum(loss, tc.tensor(1.0, device=loss.device))
-    #print('loss:', loss)
-    #print()
-    return {'loss': loss}
-
-
-def loss_mse(x, y, model, reduction='mean', device=tc.device('cpu')):
-    x, y = to_device(x, device), to_device(y, device)
-    loss_fn = nn.MSELoss(reduction=reduction)
-
-    yh = model(x)['yh_top']
-    loss_vec = loss_fn(yh, y)
-    loss = reduce(loss_vec, reduction)
-    return {'loss': loss}

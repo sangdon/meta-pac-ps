@@ -10,25 +10,10 @@ import torch as tc
 from torch.utils.data import DataLoader, Subset
 import torchvision.datasets as datasets
 
-#from torchvision.datasets.utils import check_integrity
 import torchvision.transforms as tforms
 import data
 import data.custom_transforms as ctforms
 
-
-# def _load_meta_file(meta_file):
-#     if check_integrity(meta_file):
-#         return tc.load(meta_file)
-#     else:
-#         raise RuntimeError("Meta file not found or corrupted.")
-
-    
-# def label_to_name(root, label_to_wnid):
-#     meta_file = os.path.join(root, 'meta.bin')
-#     wnid_to_names = _load_meta_file(meta_file)[0]
-
-#     names = [wnid_to_names[wnid][0].replace(' ', '_').replace('\'', '_') for wnid in label_to_wnid]
-#     return names
 
 class CIFAR10Dataset:
     def __init__(self, x, y, classes, class_to_idx, transform):
@@ -128,9 +113,6 @@ class CIFAR10:
                                           len(y_test) if sample_size['test'] is None else sample_size['test'], seed))
         self.test = DataLoader(ds, batch_size=batch_size, shuffle=True, num_workers=num_workers)
         
-        # ## add id-name map
-        # self.names = label_to_name(root, self.test.dataset.dataset.classes)
-
         ## print data statistics
         print(f'#train = {len(self.train.dataset)}, #val = {len(self.val.dataset)}, #test = {len(self.test.dataset)}')
 

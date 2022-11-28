@@ -2,7 +2,6 @@ import os, sys
 import time
 
 from learning import *
-#from uncertainty import compute_ece
 
 class ClsLearner(BaseLearner):
     def __init__(self, mdl, params=None, name_postfix=None):
@@ -25,8 +24,6 @@ class ClsLearner(BaseLearner):
         if verbose:
             print('[test%s, %f secs.] classificaiton error = %.2f%%, calibration error = %.2f%%'%(
                 ': %s'%(ld_name if ld_name else ''), time.time()-t_start, error*100.0, ece*100.0))
-        # for i, e in enumerate(error_label):
-        #     print(f'[class = {i}] error = {e}')
 
 
         return error, ece, error_label

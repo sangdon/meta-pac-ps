@@ -12,8 +12,6 @@ import warnings
 import torch as tc
 from torchvision import transforms
 from torch.utils.data import DataLoader
-#from PIL import Image
-#from data.miniimagenet import CategoriesSampler
 import data
 
 DATAFILES = [

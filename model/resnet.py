@@ -23,7 +23,6 @@ class ResNet(nn.Module):
 
         self.feat = {}
         def feat_hook(model, input, output):
-            #self.feat = tc.flatten(output, 1)
             self.feat[threading.get_ident()] = tc.flatten(output, 1)
             return output
         self.model.avgpool.register_forward_hook(feat_hook)
@@ -38,7 +37,6 @@ class ResNet(nn.Module):
         x = self.model(x)
         
         return {'fh': x, 'ph': F.softmax(x, -1), 'yh_top': x.argmax(-1), 'ph_top': F.softmax(x, -1).max(-1)[0], 'feat': self.feat[threading.get_ident()]}
-        #return {'fh': x, 'ph': F.softmax(x, -1), 'yh_top': x.argmax(-1), 'ph_top': F.softmax(x, -1).max(-1)[0], 'feat': self.feat}
 
     
 class ResNetFeat(nn.Module):

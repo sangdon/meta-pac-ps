@@ -8,32 +8,7 @@ import numpy as np
 import torch as tc
 import data
 
-
-#SEVERITY=[0, 1, 2, 3, 4, 5]
-# SYNPERT_NAME = [
-#     'GaussianNoise',
-#     'ShotNoise',
-#     'ImpulseNoise',
-#     #'GlassBlur', # slow
-#     'DefocusBlur',
-#     'MotionBlur',
-#     'ZoomBlur',
-#     'Fog',
-#     'Frost',
-#     #'Snow', # slow
-#     'Contrast',
-#     'Brightness',
-#     'JPEGCompression',
-#     'Pixelate',
-#     'Elastic',
-#     'SpeckleNoise', # extra 1
-#     'GaussianBlur', # extra 2
-# ]
-
-
-#SEVERITY=[0, 1]
 SEVERITY=[0, 1, 2, 3, 4, 5]
-#SEVERITY=[0]
 SYNPERT_NAME = [
     'GaussianNoise',
     'ShotNoise',
@@ -50,8 +25,6 @@ SYNPERT_NAME = [
     'JPEGCompression',
     'Pixelate',
     'Elastic',
-    #'SpeckleNoise', # extra 1
-    #'GaussianBlur', # extra 2
 ]
 
 NOISE_BLUR_SYNPERT_NAME = [
@@ -62,16 +35,6 @@ NOISE_BLUR_SYNPERT_NAME = [
     'DefocusBlur',
     'MotionBlur',
     'ZoomBlur',
-    #'Fog',
-    #'Frost',
-    #'Snow', # slow
-    #'Contrast',
-    #'Brightness',
-    #'JPEGCompression',
-    #'Pixelate',
-    #'Elastic',
-    #'SpeckleNoise', # extra 1
-    #'GaussianBlur', # extra 2
 ]
 
 

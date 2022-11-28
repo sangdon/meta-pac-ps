@@ -31,8 +31,6 @@ class ProtoNetGeneral(nn.Module):
         self.n_ways = n_ways
         
         if path_pretrained is not None:
-            # self.load_state_dict({k.replace('model.', '').replace('module.', '').replace('mdl.', ''): v for k, v in
-            #                       tc.load(path_pretrained, map_location=tc.device('cpu')).items()})
             self.load_state_dict({k.replace('module.', '').replace('mdl.', ''): v for k, v in
                                   tc.load(path_pretrained, map_location=tc.device('cpu')).items()})
 
@@ -78,8 +76,6 @@ class ProtoNet(nn.Module):
         self.n_shots_adapt = n_shots
         self.n_ways = n_ways
         if path_pretrained is not None:
-            # self.load_state_dict({k.replace('model.', '').replace('module.', '').replace('mdl.', ''): v for k, v in
-            #                       tc.load(path_pretrained, map_location=tc.device('cpu')).items()})
             self.load_state_dict({k.replace('module.', '').replace('mdl.', ''): v for k, v in
                                   tc.load(path_pretrained, map_location=tc.device('cpu')).items()})
 
@@ -93,27 +89,22 @@ class ProtoNet(nn.Module):
         p = self.n_shots_adapt * self.n_ways
         x_shots, x_query = x[:p], x[p:]
 
-        #print('1', x_shots.shape)
         res = self.backbone(x_shots, training=training)
         proto = res['feat']
-        #print('2', proto.shape)
-        #print('2. logits', res['fh'].shape)
         proto = proto.reshape(self.n_shots_adapt, self.n_ways, -1).mean(dim=0)
         query = self.backbone(x_query, training=training)['feat']
 
-        #print(query.shape, proto.shape)
         logits = euclidean_metric(query, proto)
 
         return {'fh': logits, 'ph': F.softmax(logits, -1), 'yh_top': logits.argmax(-1), 'ph_top': F.softmax(logits, -1).max(-1)[0]}
 
     
 class ProtoNetNLP(nn.Module):
-    def __init__(self, encoder, n_shots_adapt, n_shots_test, n_ways, path_pretrained=None):
+    def __init__(self, encoder, n_shots_adapt, n_ways, path_pretrained=None):
         super().__init__()
         self.encoder = encoder
         self.drop = nn.Dropout()
         self.n_shots_adapt = n_shots_adapt
-        self.n_shots_test = n_shots_test
         self.n_ways = n_ways
         
         if path_pretrained is not None:
@@ -122,10 +113,6 @@ class ProtoNetNLP(nn.Module):
 
             
     def __dist__(self, x, y, dim):
-        # if self.dot:
-        #     return (x * y).sum(dim)
-        # else:
-        #     return -(torch.pow(x - y, 2)).sum(dim)
         return -(torch.pow(x - y, 2)).sum(dim)
 
         
@@ -143,11 +130,9 @@ class ProtoNetNLP(nn.Module):
         N = self.n_ways
         K = self.n_shots_adapt
         if 'n_ways' in query:
-            Q = query['n_ways'] * query['n_shots']
+            Q = query['n_ways'][0] * query['n_shots'][0]
         else:
-            Q = self.n_shots_test*self.n_ways
-
-        #print('protonet', query['word'].shape, Q)
+            raise NotImplementedError
         
         support_emb = self.encoder(support) # (B * N * K, D), where D is the hidden size
         query_emb = self.encoder(query) # (B * Q, D)
@@ -156,7 +141,7 @@ class ProtoNetNLP(nn.Module):
         query = self.drop(query_emb)
         support = support.view(-1, N, K, hidden_size) # (B, N, K, D)
         query = query.view(-1, Q, hidden_size) # (B, Q, D)
-
+        
         # Prototypical Networks 
         # Ignore NA policy
         support = torch.mean(support, 2) # Calculate prototype for each class
@@ -165,7 +150,5 @@ class ProtoNetNLP(nn.Module):
         minn, _ = logits.min(-1)
         logits = torch.cat([logits, minn.unsqueeze(2) - 1], 2) # (B, total_Q, N + 1)
         logits = logits.view(-1, N+1)
-        
-        #logits = logits.view(-1, N)
         
         return {'fh': logits, 'ph': F.softmax(logits, -1), 'yh_top': logits.argmax(-1), 'ph_top': F.softmax(logits, -1).max(-1)[0]}

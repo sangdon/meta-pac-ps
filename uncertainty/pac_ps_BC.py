@@ -23,7 +23,6 @@ def geb_iw_finite(delta, m, n_C, M, d2_max):
 
 def log_factorial(n):
 
-    #log_f = tc.arange(n, 0, -1).float().log().sum()
     log_f = np.sum(np.log(np.arange(n, 0, -1.0)))
     
     return log_f
@@ -33,8 +32,6 @@ def log_n_choose_k(n, k):
     if k == 0:
         return np.log(1.0)
     else:
-        #res = log_factorial(n) - log_factorial(k) - log_factorial(n-k)
-        #res = tc.arange(n, n-k, -1).float().log().sum() - log_factorial(k)
         res = np.sum(np.log(np.arange(n, n-k, -1.0))) - log_factorial(k)
         return res
 
@@ -42,11 +39,8 @@ def log_n_choose_k(n, k):
 def half_line_bound_upto_k(n, k, eps):
     assert(eps > 0.0)
     ubs = []
-    #eps = tc.tensor(eps)
     for i in np.arange(0, k+1):
         bc_log = log_n_choose_k(n, i)
-        #log_ub = bc_log + eps.log()*i + (1.0-eps).log()*(n-i)
-        #ubs.append(log_ub.exp().unsqueeze(0))
         log_ub = bc_log + np.log(eps)*i + np.log(1.0-eps)*(n-i)
         ubs.append([np.exp(log_ub)])
     ubs = np.concatenate(ubs)
@@ -70,12 +64,6 @@ class PredSetConstructor_BC(PredSetConstructor):
     def _compute_error_permissive_VC(self, eps, delta, n):
         g = geb_VC(delta, n)    
         error_per = eps - g
-        # if error_per >= 0.0:
-        #     error_per = round(error_per*n)
-        #     error_per = min(n, error_per)
-        # else:
-        #     error_per = None
-        # return error_per   
         return round(error_per*n) if error_per >= 0.0 else None
 
     
@@ -90,7 +78,6 @@ class PredSetConstructor_BC(PredSetConstructor):
         while True:
             # choose new k
             k_prev = k
-            #k = (T(k_min + k_max).float()/2.0).round().long().item()
             k = round(float(k_min + k_max)/2.0)
         
             # terminate condition
@@ -108,7 +95,6 @@ class PredSetConstructor_BC(PredSetConstructor):
         k_best = k_min
         assert(half_line_bound_upto_k(n, k_best, eps) <= delta)
         assert(k_best >= 0 and k_best <= n)
-        #error_allow = float(k_best) / float(n)
         return k_best
 
     
@@ -140,7 +126,6 @@ class PredSetConstructor_BC(PredSetConstructor):
         verbose = params.verbose
         save = params.save
         
-        #n, eps, delta = self.mdl.n.item(), self.mdl.eps.item(), self.mdl.delta.item()
         print(f"## construct a prediction set: n = {n}, eps = {eps:.2e}, delta = {delta:.2e}")
 
         ## load a model

@@ -5,7 +5,6 @@ import torch as tc
 import torch.nn as nn
 from torch import tensor as T
 
-from .util import *
 
 ##
 ## predictive confidence set

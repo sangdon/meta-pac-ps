@@ -19,23 +19,6 @@ class FNN(nn.Module):
         self.feat = nn.Sequential(*models)
         self.classifier = nn.Linear(n_hiddens if n_hiddens is not None else n_in, n_out)
 
-        # if path_pretrained is not None:
-        #     warnings.warn('use a unified model structure for model loading')
-        #     self.model.load_state_dict({k.replace('model.', '').replace('module.', '').replace('mdl.', ''): v for k, v in
-        #                                 tc.load(path_pretrained, map_location=tc.device('cpu')).items()})
-        #     # self.model.load_state_dict({k.replace('module.', '').replace('mdl.', ''): v for k, v in
-        #     #                             tc.load(path_pretrained, map_location=tc.device('cpu')).items()})
-                        
-        #     # self.model.load_state_dict({k.replace('model.', '').replace('module.', '').replace('mdl.', ''): v for k, v in
-        #     #                             tc.load(path_pretrained, map_location=tc.device('cpu')).items()})
-            
-        # self.feat = {}
-        # def feat_hook(model, input, output):
-        #     self.feat[threading.get_ident()] = tc.flatten(output, 1)
-        #     return output
-        # models[-2].register_forward_hook(feat_hook)
-
-        
         
     def forward(self, x, training=False):
         if training:

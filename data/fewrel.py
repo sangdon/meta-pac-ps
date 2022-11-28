@@ -104,6 +104,9 @@ class FewRelDataset(Dataset):
 
         random.seed(time.time())
 
+        query_set['n_ways'] = torch.tensor([self.N])
+        query_set['n_shots'] = torch.tensor([self.Q])
+        
         return support_set, query_set, query_label
 
     
@@ -114,7 +117,7 @@ class FewRelDataset(Dataset):
     
 def collate_fn(data):
     batch_support = {'word': [], 'pos1': [], 'pos2': [], 'mask': []}
-    batch_query = {'word': [], 'pos1': [], 'pos2': [], 'mask': []}
+    batch_query = {'word': [], 'pos1': [], 'pos2': [], 'mask': [], 'n_ways': [], 'n_shots': []}
     batch_label = []
     support_sets, query_sets, query_labels = zip(*data)
 
@@ -129,22 +132,10 @@ def collate_fn(data):
     for k in batch_query:
         batch_query[k] = torch.stack(batch_query[k], 0)
     batch_label = torch.tensor(batch_label)
+
     return (batch_support, batch_query), batch_label
 
 
-# def get_loader(name, encoder, N, K, Q, batch_size, 
-#         num_workers=8, collate_fn=collate_fn, na_rate=0, root='./data'):
-#     dataset = FewRelDataset(name, encoder, N, K, Q, na_rate, root)
-#     data_loader = data.DataLoader(dataset=dataset,
-#             batch_size=batch_size,
-#             shuffle=False,
-#             pin_memory=True,
-#             num_workers=num_workers,
-#             collate_fn=collate_fn)
-#     return iter(data_loader)
-
-
-            
     
 class FewRel:
     def __init__(self, root, args):
@@ -156,6 +147,7 @@ class FewRel:
         num_workers = args.n_workers
         n_ways = args.n_ways
         n_shots_adapt = args.n_shots_adapt
+        n_shots_train = args.n_shots_train
         n_shots_cal = args.n_shots_cal
         n_shots_test = args.n_shots_test
         encoder_name = args.encoder_name
@@ -173,7 +165,7 @@ class FewRel:
 
 
         # train
-        ds = FewRelDataset('train_wiki', encoder, n_datasets_train, n_ways, n_shots_adapt, n_shots_test, 0, root, seed=seed)
+        ds = FewRelDataset('train_wiki', encoder, n_datasets_train, n_ways, n_shots_adapt, n_shots_train, 0, root, seed=seed)
         self.train = DataLoader(dataset=ds, batch_size=args.batch_size, shuffle=True, collate_fn=collate_fn, num_workers=num_workers, pin_memory=True)
 
         ds = FewRelDataset('val_wiki', encoder, n_datasets_cal, n_ways, n_shots_adapt, n_shots_cal, 0, root, seed=seed+1)
@@ -185,7 +177,6 @@ class FewRel:
         ds = FewRelDataset('val_wiki', encoder, n_datasets_test, n_ways, n_shots_adapt, n_shots_test, 0, root, seed=seed+3)
         self.test = DataLoader(dataset=ds, batch_size=args.batch_size, shuffle=False, collate_fn=collate_fn, num_workers=num_workers, pin_memory=True)
 
-        #TODO
         self.encoder = encoder
         
         print(f'#train dataset = {len(self.train.dataset)}, '\
