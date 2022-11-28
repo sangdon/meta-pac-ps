@@ -20,9 +20,14 @@ Train a Prototypical network as follows:
 ./scripts/train_miniimagenet_protonet.sh 
 ```
   
-Construct a meta PAC prediction set along with baselines as follows:
+Construct and evaluate a meta PAC prediction set along with baselines as follows:
 ```
 ./scripts/cal_miniimagenet_protonet.sh
+```
+  
+To reproduce evaluation results, run the following script to generate plots:
+```
+./scripts/plot_miniimagenet.sh
 ```
 
 ## FewRel Dataset
@@ -38,9 +43,14 @@ Train a Prototypical network as follows:
 ./scripts/train_fewrel_protonet.sh 
 ```
   
-Construct a meta PAC prediction set along with baselines as follows:
+Construct and evaluate a meta PAC prediction set along with baselines as follows:
 ```
 ./scripts/cal_fewrel_protonet.sh
+```
+  
+To reproduce evaluation results, run the following script to generate plots:
+```
+./scripts/plot_fewrel.sh
 ```
 
 
@@ -57,8 +67,13 @@ Train a Prototypical network as follows:
 ./scripts/train_heart_protonet.sh
 ```
 
-Construct a meta PAC prediction set along with baselines as follows:
+Construct and evaluate a meta PAC prediction set along with baselines as follows:
 ```
 ./scripts/cal_heart_protonet.sh
+```
+
+To reproduce evaluation results, run the following script to generate plots:
+```
+./scripts/plot_heart.sh
 ```
 
